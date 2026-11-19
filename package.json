@@ -1,0 +1,22 @@
+{
+  "name": "synapse-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Galería de arte generativo procedimental con SQLite persistente en el navegador.",
+  "scripts": {
+    "sync:wasm": "node scripts/copy-wasm.mjs",
+    "dev": "npm run sync:wasm && vite",
+    "build": "npm run sync:wasm && tsc && vite build",
+    "preview": "vite preview",
+    "postinstall": "node scripts/copy-wasm.mjs"
+  },
+  "dependencies": {
+    "sql.js": "^1.16.0"
+  },
+  "devDependencies": {
+    "@types/sql.js": "^1.4.11",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.8"
+  }
+}

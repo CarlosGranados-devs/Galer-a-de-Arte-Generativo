@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Synapse Studio: un laboratorio de arte generativo procedimental. Crea, titula y conserva obras únicas generadas por algoritmos y guardadas en SQLite dentro de tu navegador."
+    />
+    <meta name="theme-color" content="#09090b" />
+    <meta property="og:title" content="Synapse Studio — Galería de Arte Generativo" />
+    <meta
+      property="og:description"
+      content="El azar, domesticado. Obras de arte procedimental con SQLite persistente en el navegador."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Synapse Studio — Galería de Arte Generativo</title>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body class="is-booting">
+    <svg xmlns="http://www.w3.org/2000/svg" class="svg-sprite" aria-hidden="true">
+      <symbol id="i-spark" viewBox="0 0 24 24">
+        <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z" />
+        <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" />
+      </symbol>
+      <symbol id="i-database" viewBox="0 0 24 24">
+        <ellipse cx="12" cy="5.5" rx="7.5" ry="3" />
+        <path d="M4.5 5.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6" />
+        <path d="M4.5 11.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6" />
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24">
+        <path d="m6 9 6 6 6-6" />
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="6.5" />
+        <path d="m16 16 4.5 4.5" />
+      </symbol>
+      <symbol id="i-dice" viewBox="0 0 24 24">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="4" />
+        <circle cx="8.2" cy="8.2" r="1.15" fill="currentColor" stroke="none" />
+        <circle cx="15.8" cy="8.2" r="1.15" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="12" r="1.15" fill="currentColor" stroke="none" />
+        <circle cx="8.2" cy="15.8" r="1.15" fill="currentColor" stroke="none" />
+        <circle cx="15.8" cy="15.8" r="1.15" fill="currentColor" stroke="none" />
+      </symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 3.5v11" />
+        <path d="m7.5 10 4.5 4.5 4.5-4.5" />
+        <path d="M4.5 17.5v1.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-1.5" />
+      </symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24">
+        <path d="M4 20h4.2L20 8.2a2.1 2.1 0 0 0 0-3L18.8 4a2.1 2.1 0 0 0-3 0L4 15.8V20Z" />
+        <path d="m13.8 6 4.2 4.2" />
+      </symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24">
+        <path d="M4 7h16" />
+        <path d="M9 7V4.5h6V7" />
+        <path d="M6 7l.8 12.2a1.5 1.5 0 0 0 1.5 1.3h7.4a1.5 1.5 0 0 0 1.5-1.3L18 7" />
+        <path d="M10 11v5.5M14 11v5.5" />
+      </symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24">
+        <path d="M9 4H4v5" />
+        <path d="M15 4h5v5" />
+        <path d="M9 20H4v-5" />
+        <path d="M15 20h5v-5" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M18 6 6 18" />
+      </symbol>
+      <symbol id="i-image" viewBox="0 0 24 24">
+        <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+        <circle cx="9" cy="9.5" r="1.6" />
+        <path d="m4.5 17 4.8-4.8 3.2 3.2 2.5-2.5 4.5 4.6" />
+      </symbol>
+      <symbol id="i-warning" viewBox="0 0 24 24">
+        <path d="M12 3.5 22 20H2L12 3.5Z" />
+        <path d="M12 9v5" />
+        <circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="m8.2 12.2 2.6 2.6 5.2-5.4" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14" />
+        <path d="m13 6 6 6-6 6" />
+      </symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24">
+        <path d="m12 3 9 5-9 5-9-5 9-5Z" />
+        <path d="m3.5 12.5 8.5 4.7 8.5-4.7" />
+        <path d="m3.5 16.8 8.5 4.7 8.5-4.7" />
+      </symbol>
+      <symbol id="i-palette" viewBox="0 0 24 24">
+        <path
+          d="M12 3a9 9 0 0 0 0 18h1.4a2 2 0 0 0 1.5-3.3 1.7 1.7 0 0 1 1.3-2.8h1.9A3.9 3.9 0 0 0 22 11 8 8 0 0 0 12 3Z"
+        />
+        <circle cx="7.8" cy="11.8" r="1" fill="currentColor" stroke="none" />
+        <circle cx="10.5" cy="7.6" r="1" fill="currentColor" stroke="none" />
+        <circle cx="15" cy="8.4" r="1" fill="currentColor" stroke="none" />
+      </symbol>
+      <symbol id="i-code" viewBox="0 0 24 24">
+        <path d="m8.5 8-4 4 4 4" />
+        <path d="m15.5 8 4 4-4 4" />
+        <path d="m13.5 4-3 16" />
+      </symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24">
+        <path d="M20 11a8 8 0 1 0-.7 4.5" />
+        <path d="M20 4v7h-7" />
+      </symbol>
+    </svg>
+
+    <div class="boot-overlay" id="boot-overlay" role="status" aria-live="polite">
+      <div class="boot-inner">
+        <div class="boot-mark" aria-hidden="true">
+          <span class="boot-ring"></span>
+          <span class="boot-core"></span>
+        </div>
+        <p class="boot-title">Synapse Studio</p>
+        <p class="boot-copy">Abriendo la bóveda SQLite…</p>
+        <div class="boot-bar"><span></span></div>
+      </div>
+    </div>
+
+    <div class="site-shell" id="top">
+      <header class="site-header">
+        <div class="header-inner">
+          <a class="brand" href="#top" aria-label="Synapse Studio, ir al inicio">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="15.5" stroke="url(#brandGradient)" stroke-width="1.2" opacity=".7" />
+                <circle cx="20" cy="20" r="9" stroke="url(#brandGradient)" stroke-width="1.2" opacity=".45" />
+                <circle cx="20" cy="20" r="3" fill="url(#brandGradient)" />
+                <circle cx="32" cy="11" r="2.2" fill="#a5b4fc" />
+                <path d="M20 20 32 11M20 20 8 28M20 20 30 30" stroke="url(#brandGradient)" stroke-width="1" opacity=".6" />
+                <defs>
+                  <linearGradient id="brandGradient" x1="6" y1="6" x2="34" y2="34">
+                    <stop stop-color="#818cf8" />
+                    <stop offset="1" stop-color="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </span>
+            <span class="brand-copy">
+              <span class="brand-name">Synapse Studio</span>
+              <span class="brand-sub">Generative Art Lab</span>
+            </span>
+          </a>
+
+          <nav class="header-nav" aria-label="Navegación principal">
+            <a href="#studio">Estudio</a>
+            <a href="#galeria">Galería</a>
+            <a href="#galeria" data-focus-search>Buscar</a>
+          </nav>
+
+          <div class="header-actions">
+            <button
+              type="button"
+              class="db-status"
+              id="sql-toggle"
+              aria-expanded="false"
+              aria-controls="sql-drawer"
+              title="Ver el inspector de consultas SQL"
+            >
+              <span class="status-dot is-loading" id="db-status-dot"></span>
+              <span class="db-status-text" id="db-status-text">Conectando SQLite…</span>
+              <svg class="icon icon-xs status-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            </button>
+            <a class="header-cta" href="#studio">
+              Crear obra
+              <svg class="icon icon-xs" aria-hidden="true"><use href="#i-arrow"></use></svg>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-main">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-glow hero-glow-a" aria-hidden="true"></div>
+          <div class="hero-glow hero-glow-b" aria-hidden="true"></div>
+          <div class="hero-copy">
+            <span class="eyebrow">
+              <span class="eyebrow-dot"></span>
+              Laboratorio 03 · Arte procedimental
+            </span>
+            <h1 id="hero-title">El azar,<br /><span class="hero-accent">domesticado.</span></h1>
+            <p class="hero-lede">
+              Un estudio vivo donde la matemática se vuelve pigmento. Compón una obra con algoritmos,
+              siembra una semilla y consérvala en una base de datos SQLite que vive dentro de tu navegador.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#studio">
+                <svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg>
+                Abrir el estudio
+              </a>
+              <a class="button button-ghost" href="#galeria">
+                Explorar la colección
+                <svg class="icon icon-xs" aria-hidden="true"><use href="#i-arrow"></use></svg>
+              </a>
+            </div>
+          </div>
+
+          <aside class="hero-aside" aria-label="Resumen del archivo">
+            <div class="hero-stat">
+              <span class="hero-stat-value" id="stat-artworks">—</span>
+              <span class="hero-stat-label">Obras en archivo</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">04</span>
+              <span class="hero-stat-label">Algoritmos</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">05</span>
+              <span class="hero-stat-label">Paletas curadas</span>
+            </div>
+            <p class="hero-note">
+              <span class="status-dot is-loading" id="hero-status-dot"></span>
+              <span id="hero-note-text">Inicializando el archivo local…</span>
+            </p>
+          </aside>
+        </section>
+
+        <div class="workspace">
+          <section class="studio panel" id="studio" aria-labelledby="studio-title">
+            <header class="panel-head">
+              <div>
+                <span class="panel-eyebrow">Estudio generativo</span>
+                <h2 class="panel-title" id="studio-title">Composición en vivo</h2>
+              </div>
+              <div class="panel-head-actions">
+                <span class="live-badge"><span class="live-dot"></span>Live</span>
+                <button type="button" class="icon-button" id="surprise-btn" title="Sorpréndeme con una composición aleatoria" aria-label="Generar composición aleatoria">
+                  <svg class="icon icon-sm" aria-hidden="true"><use href="#i-refresh"></use></svg>
+                </button>
+              </div>
+            </header>
+
+            <div class="preview">
+              <div class="preview-frame">
+                <canvas id="studio-canvas" width="1000" height="1000" aria-label="Vista previa del arte generativo"></canvas>
+                <div class="preview-badges">
+                  <span class="preview-badge" id="preview-algorithm">—</span>
+                  <span class="preview-badge" id="preview-palette">—</span>
+                </div>
+                <div class="preview-seed">
+                  <span class="preview-seed-label">seed</span>
+                  <span class="preview-seed-value" id="preview-seed">0x00000000</span>
+                </div>
+              </div>
+              <div class="preview-foot">
+                <span class="mono-muted">1000 × 1000 px · determinista</span>
+                <span class="mono-muted" id="preview-complexity">Complejidad 62</span>
+              </div>
+            </div>
+
+            <form class="studio-form" id="studio-form" novalidate>
+              <div class="field-row">
+                <label class="field">
+                  <span class="field-label">Algoritmo</span>
+                  <span class="select-wrap">
+                    <select id="algorithm-select" name="algorithm"></select>
+                    <svg class="icon icon-xs select-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+                  </span>
+                </label>
+                <label class="field">
+                  <span class="field-label">Paleta</span>
+                  <span class="select-wrap">
+                    <select id="palette-select" name="palette"></select>
+                    <svg class="icon icon-xs select-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+                  </span>
+                </label>
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="complexity-range">Complejidad</label>
+                  <output class="complexity-output" id="complexity-value" for="complexity-range">62</output>
+                </div>
+                <input
+                  type="range"
+                  id="complexity-range"
+                  name="complexity"
+                  min="10"
+                  max="100"
+                  step="1"
+                  value="62"
+                  aria-label="Complejidad de la obra"
+                />
+                <div class="range-labels" aria-hidden="true">
+                  <span>Minimal</span>
+                  <span>Barroco</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <span class="field-label">Semilla determinista</span>
+                <div class="seed-row">
+                  <span class="seed-chip" id="seed-value">0x00000000</span>
+                  <button type="button" class="button button-secondary button-random" id="randomize-seed" title="Aleatorizar semilla">
+                    <svg class="icon icon-sm" aria-hidden="true"><use href="#i-dice"></use></svg>
+                    Aleatorizar
+                  </button>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <label class="field">
+                  <span class="field-label">Título de la obra</span>
+                  <input
+                    type="text"
+                    id="title-input"
+                    name="title"
+                    maxlength="70"
+                    autocomplete="off"
+                    placeholder="Ej. Deriva orbital"
+                  />
+                </label>
+                <label class="field">
+                  <span class="field-label">Autor</span>
+                  <input
+                    type="text"
+                    id="artist-input"
+                    name="artist"
+                    maxlength="48"
+                    autocomplete="off"
+                    placeholder="Tu nombre"
+                  />
+                </label>
+              </div>
+              <p class="form-hint" id="studio-hint" role="alert" aria-live="polite"></p>
+
+              <button type="submit" class="button button-primary button-publish" id="publish-btn">
+                <svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg>
+                <span id="publish-label">Publicar en galería</span>
+                <span class="button-spinner" aria-hidden="true"></span>
+              </button>
+
+              <p class="publish-note">
+                <svg class="icon icon-xs" aria-hidden="true"><use href="#i-database"></use></svg>
+                Se guarda como registro SQLite y persiste en localStorage.
+              </p>
+            </form>
+          </section>
+
+          <section class="gallery" id="galeria" aria-labelledby="gallery-title">
+            <header class="gallery-head">
+              <div class="gallery-head-copy">
+                <span class="panel-eyebrow">Colección permanente</span>
+                <div class="gallery-title-row">
+                  <h2 class="gallery-title" id="gallery-title">Galería curada</h2>
+                  <span class="count-pill" id="gallery-count">0 obras</span>
+                </div>
+              </div>
+              <div class="gallery-tools">
+                <label class="search-field" for="search-input">
+                  <svg class="icon icon-sm search-icon" aria-hidden="true"><use href="#i-search"></use></svg>
+                  <input
+                    type="search"
+                    id="search-input"
+                    placeholder="Buscar por título o autor…"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <button type="button" class="search-clear" id="search-clear" aria-label="Limpiar búsqueda" hidden>
+                    <svg class="icon icon-xs" aria-hidden="true"><use href="#i-close"></use></svg>
+                  </button>
+                </label>
+              </div>
+            </header>
+
+            <div class="filter-bar">
+              <div class="filter-group">
+                <span class="filter-label"><svg class="icon icon-xs" aria-hidden="true"><use href="#i-palette"></use></svg> Paleta</span>
+                <div class="filter-pills" id="palette-filters"></div>
+              </div>
+              <div class="filter-group">
+                <span class="filter-label"><svg class="icon icon-xs" aria-hidden="true"><use href="#i-layers"></use></svg> Algoritmo</span>
+                <div class="filter-pills" id="algorithm-filters"></div>
+              </div>
+            </div>
+
+            <div class="results-bar" id="results-bar" hidden>
+              <span id="results-text"></span>
+              <button type="button" class="text-button" id="results-reset">Limpiar filtros</button>
+            </div>
+
+            <div class="gallery-grid" id="gallery-grid" aria-live="polite">
+              <div class="skeleton-card" aria-hidden="true"></div>
+              <div class="skeleton-card" aria-hidden="true"></div>
+              <div class="skeleton-card" aria-hidden="true"></div>
+              <div class="skeleton-card" aria-hidden="true"></div>
+            </div>
+
+            <div class="empty-state" id="empty-state" hidden>
+              <span class="empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none">
+                  <rect x="6" y="6" width="36" height="36" rx="8" stroke="currentColor" stroke-width="1.2" />
+                  <circle cx="19" cy="19" r="4.5" stroke="currentColor" stroke-width="1.2" />
+                  <path d="m9 37 10-10 7 7 5-5 8 8" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+                  <circle cx="39" cy="9" r="4" fill="#09090b" stroke="currentColor" stroke-width="1.2" />
+                </svg>
+              </span>
+              <h3 id="empty-title">La galería espera su primera obra</h3>
+              <p id="empty-copy">Compón una pieza en el estudio, dale un título y publícala. Quedará guardada en tu archivo SQLite.</p>
+              <div class="empty-actions">
+                <a class="button button-primary" href="#studio" id="empty-cta">
+                  <svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg>
+                  Crear una obra
+                </a>
+                <button type="button" class="button button-ghost" id="empty-reset" hidden>Limpiar filtros</button>
+              </div>
+            </div>
+
+            <p class="gallery-footnote">
+              <span class="status-dot is-ready" id="gallery-db-dot"></span>
+              Cada pieza se reconstruye de forma determinista a partir de su semilla, algoritmo, paleta y complejidad.
+            </p>
+          </section>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <span class="brand-mark brand-mark-sm" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="15.5" stroke="#818cf8" stroke-width="1.2" opacity=".6" />
+                <circle cx="20" cy="20" r="9" stroke="#8b5cf6" stroke-width="1.2" opacity=".45" />
+                <circle cx="20" cy="20" r="3" fill="#818cf8" />
+                <path d="M20 20 32 11M20 20 8 28" stroke="#8b5cf6" stroke-width="1" opacity=".6" />
+              </svg>
+            </span>
+            <div>
+              <p class="footer-title">Synapse Studio</p>
+              <p class="footer-copy">Arte generativo procedimental, conservado del lado del cliente.</p>
+            </div>
+          </div>
+          <div class="footer-tech" aria-label="Tecnologías utilizadas">
+            <span>Vite</span>
+            <span>TypeScript</span>
+            <span>sql.js</span>
+            <span>WebAssembly</span>
+            <span>Canvas 2D</span>
+          </div>
+          <p class="footer-meta">Laboratorio 03 · <span id="footer-year">2026</span> · Cada navegador guarda su propio museo.</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Lightbox / ficha técnica inmersiva -->
+    <div class="modal" id="lightbox" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="lightbox"></div>
+      <div class="modal-panel lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
+        <button type="button" class="modal-close" id="lightbox-close" aria-label="Cerrar vista inmersiva">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+        <div class="lightbox-art">
+          <canvas id="lightbox-canvas" width="1600" height="1600" aria-label="Obra ampliada"></canvas>
+          <div class="lightbox-art-meta">
+            <span class="mono-muted">Synapse Studio · Archivo local</span>
+            <span class="mono-muted" id="lightbox-seed-chip">0x00000000</span>
+          </div>
+        </div>
+        <div class="lightbox-info">
+          <span class="panel-eyebrow">Ficha técnica</span>
+          <h2 class="lightbox-title" id="lightbox-title">—</h2>
+          <p class="lightbox-artist" id="lightbox-artist">—</p>
+
+          <dl class="meta-grid">
+            <div class="meta-item">
+              <dt>Algoritmo</dt>
+              <dd id="lightbox-algorithm">—</dd>
+            </div>
+            <div class="meta-item">
+              <dt>Paleta</dt>
+              <dd id="lightbox-palette">—</dd>
+            </div>
+            <div class="meta-item">
+              <dt>Semilla</dt>
+              <dd class="mono" id="lightbox-seed">—</dd>
+            </div>
+            <div class="meta-item">
+              <dt>Complejidad</dt>
+              <dd id="lightbox-complexity">—</dd>
+            </div>
+            <div class="meta-item">
+              <dt>Fecha de creación</dt>
+              <dd id="lightbox-date">—</dd>
+            </div>
+            <div class="meta-item">
+              <dt>Registro SQLite</dt>
+              <dd class="mono" id="lightbox-id">—</dd>
+            </div>
+          </dl>
+
+          <div class="complexity-meter" aria-hidden="true">
+            <span id="lightbox-complexity-bar"></span>
+          </div>
+
+          <div class="lightbox-actions">
+            <button type="button" class="button button-primary" id="lightbox-download">
+              <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>
+              Exportar PNG
+            </button>
+            <button type="button" class="button button-secondary" id="lightbox-edit">
+              <svg class="icon" aria-hidden="true"><use href="#i-edit"></use></svg>
+              Editar ficha
+            </button>
+          </div>
+          <p class="lightbox-note">
+            <svg class="icon icon-xs" aria-hidden="true"><use href="#i-database"></use></svg>
+            Obra reconstruida desde SQLite a partir de sus parámetros originales.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edición de ficha -->
+    <div class="modal" id="edit-modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="edit-modal"></div>
+      <div class="modal-panel form-panel" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+        <button type="button" class="modal-close" id="edit-close" aria-label="Cerrar edición">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+        <span class="panel-eyebrow">Actualizar registro</span>
+        <h2 class="form-panel-title" id="edit-modal-title">Editar ficha técnica</h2>
+        <p class="form-panel-copy">Los cambios se ejecutan con un <code>UPDATE</code> parametrizado sobre SQLite.</p>
+
+        <form id="edit-form" novalidate>
+          <input type="hidden" id="edit-id" />
+          <label class="field">
+            <span class="field-label">Título de la obra</span>
+            <input type="text" id="edit-title" maxlength="70" autocomplete="off" required />
+          </label>
+          <label class="field">
+            <span class="field-label">Autor</span>
+            <input type="text" id="edit-artist" maxlength="48" autocomplete="off" required />
+          </label>
+          <label class="field">
+            <span class="field-label">Paleta</span>
+            <span class="select-wrap">
+              <select id="edit-palette"></select>
+              <svg class="icon icon-xs select-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            </span>
+          </label>
+          <div class="edit-artifact">
+            <span class="edit-artifact-label">Parámetros inmutables</span>
+            <span class="edit-artifact-value" id="edit-artifact">—</span>
+          </div>
+          <p class="form-hint" id="edit-hint" role="alert" aria-live="polite"></p>
+          <div class="form-actions">
+            <button type="button" class="button button-ghost" id="edit-cancel">Cancelar</button>
+            <button type="submit" class="button button-primary">
+              <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+              Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Confirmación de borrado -->
+    <div class="modal" id="delete-modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="delete-modal"></div>
+      <div class="modal-panel confirm-panel" role="alertdialog" aria-modal="true" aria-labelledby="delete-title" aria-describedby="delete-copy">
+        <span class="confirm-icon" aria-hidden="true">
+          <svg class="icon" aria-hidden="true"><use href="#i-warning"></use></svg>
+        </span>
+        <h2 class="confirm-title" id="delete-title">Eliminar esta obra</h2>
+        <p class="confirm-copy" id="delete-copy">
+          <strong id="delete-artwork-title">—</strong> se borrará de SQLite de forma permanente. Esta acción no se puede deshacer.
+        </p>
+        <div class="form-actions">
+          <button type="button" class="button button-ghost" id="delete-cancel">Conservar</button>
+          <button type="button" class="button button-danger" id="delete-confirm">
+            <svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg>
+            Eliminar obra
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspector SQL -->
+    <aside class="sql-drawer" id="sql-drawer" aria-hidden="true" aria-labelledby="sql-drawer-title">
+      <header class="sql-head">
+        <div class="sql-head-copy">
+          <span class="sql-kicker"><span class="status-dot is-ready"></span> SQLite · inspector</span>
+          <h2 id="sql-drawer-title">Consultas en vivo</h2>
+        </div>
+        <button type="button" class="icon-button" id="sql-close" aria-label="Cerrar inspector SQL">
+          <svg class="icon icon-sm" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </header>
+      <p class="sql-copy">
+        Traza transparente de las sentencias ejecutadas por sql.js. Persistencia automática en
+        <code>localStorage</code>.
+      </p>
+      <div class="sql-log" id="sql-log" role="log" aria-live="off">
+        <p class="sql-empty">Aún no hay consultas registradas.</p>
+      </div>
+      <footer class="sql-foot">
+        <span class="mono-muted" id="sql-count">0 sentencias</span>
+        <span class="mono-muted" id="sql-persisted">Persistencia lista</span>
+      </footer>
+    </aside>
+
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+  </body>
+</html>
